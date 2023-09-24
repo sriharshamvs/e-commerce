@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  user-db:
+    image: postgres
+    env_file:
+      - docker-compose.env
+    volumes:
+      - user_postgres_data:/var/lib/postgresql/data
+
+  user-service:
+    build: ./services/user-service
+    env_file:
+      - docker-compose.env
+    depends_on:
+      - user-db
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./services/user-service:/usr/src/app
+
+volumes:
+  user_postgres_data:
