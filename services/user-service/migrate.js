@@ -1,6 +1,5 @@
-// migrate.js
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
   user: process.env.POSTGRES_USER,
@@ -19,12 +18,12 @@ const migrate = async () => {
         password VARCHAR(255) NOT NULL
       );
     `);
-    console.log('Migration completed successfully');
+    console.log("Migration completed successfully");
   } catch (error) {
-    console.error('Migration failed:', error.message);
+    console.error("Migration failed:", error.message);
   } finally {
     await pool.end();
   }
 };
 
-module.exports = migrate;  // Export the migrate function
+module.exports = migrate;
