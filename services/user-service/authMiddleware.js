@@ -16,7 +16,6 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ error: "Access denied, invalid token." });
     }
     req.user = decoded;
-    console.log("MIDDLEWARE::::", req.user);
     next();
   });
 };
