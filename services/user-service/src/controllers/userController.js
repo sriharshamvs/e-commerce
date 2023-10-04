@@ -1,16 +1,14 @@
-const db = require("../config/db");
 const {
-  PROFILE_GET_USER_DETAILS_QUERY,
-  UPDATE_PROFILE_USER_DETIALS_QUERY,
-} = require("../utils/queries");
+  findUserByEmail,
+  updateDetailsUserByEmail,
+} = require("../models/userModel");
 const { HTTP_STATUS } = require("../constants");
 
 const getUserProfile = async (req, res) => {
   try {
     const requestBody = req.body;
     const email = requestBody.email;
-    const result = await db.query(PROFILE_GET_USER_DETAILS_QUERY, [email]);
-    const user = result.rows[0];
+    const user = await findUserByEmail(email);
 
     if (!user) {
       return res
@@ -40,9 +38,7 @@ const updateUserProfile = async (req, res) => {
     const requestBody = req.body;
     const email = requestBody.email;
 
-    const result = await db.query(PROFILE_GET_USER_DETAILS_QUERY, [email]);
-
-    const user = result.rows[0];
+    const user = await findUserByEmail(email);
 
     if (!user) {
       return res
@@ -55,24 +51,21 @@ const updateUserProfile = async (req, res) => {
     const address = requestBody.address;
     const mobileNumber = requestBody.mobileNumber;
 
-    await db.query(UPDATE_PROFILE_USER_DETIALS_QUERY, [
+    await updateDetailsUserByEmail(
       firstname,
       lastname,
       address,
       mobileNumber,
-      email,
-    ]);
-    const update_result = await db.query(PROFILE_GET_USER_DETAILS_QUERY, [
-      email,
-    ]);
-    const update_user = update_result.rows[0];
+      email
+    );
+    const updated_user = await findUserByEmail(email);
     const userDetails = {
-      userID: update_user.id,
-      email: update_user.email,
-      firstname: update_user.firstname,
-      lastname: update_user.lastname,
-      mobileNumber: update_user.mobileNumber,
-      email: update_user.email,
+      userID: updated_user.id,
+      email: updated_user.email,
+      firstname: updated_user.firstname,
+      lastname: updated_user.lastname,
+      mobileNumber: updated_user.mobileNumber,
+      email: updated_user.email,
     };
     res
       .status(HTTP_STATUS.OK.CODE)

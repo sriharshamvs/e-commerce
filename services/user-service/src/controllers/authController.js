@@ -1,19 +1,11 @@
 const bcrypt = require("bcrypt");
-const db = require("../config/db");
+const { createUser, findPasswordHashByEmail } = require("../models/userModel");
 const { generateTokens, verifyToken } = require("../services/jwtService");
-const { REGISTER_QUERY, LOGIN_USERNAME_QUERY } = require("../utils/queries");
 const { HTTP_STATUS } = require("../constants");
 
 const register = async (req, res) => {
   try {
-    const { email, firstname, lastname, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await db.query(REGISTER_QUERY, [
-      email,
-      firstname,
-      lastname,
-      hashedPassword,
-    ]);
+    const user = await createUser(req.body);
     res
       .status(HTTP_STATUS.CREATED.CODE)
       .json({ message: HTTP_STATUS.CREATED.MESSAGE });
@@ -28,8 +20,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await db.query(LOGIN_USERNAME_QUERY, [email]);
-    const user = result.rows[0];
+    const user = await findPasswordHashByEmail(email);
 
     if (!user) {
       return res
