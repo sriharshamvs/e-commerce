@@ -1,13 +1,10 @@
-const express = require("express");
 const bcrypt = require("bcrypt");
-const db = require("../db");
-const { generateTokens } = require("../jwt");
-const { REGISTER_QUERY, LOGIN_USERNAME_QUERY } = require("../queries");
+const db = require("../config/db");
+const { generateTokens, verifyToken } = require("../services/jwtService");
+const { REGISTER_QUERY, LOGIN_USERNAME_QUERY } = require("../utils/queries");
 const { HTTP_STATUS } = require("../constants");
 
-const router = express.Router();
-
-router.post("/register", async (req, res) => {
+const register = async (req, res) => {
   try {
     const { email, firstname, lastname, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,9 +23,9 @@ router.post("/register", async (req, res) => {
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE)
       .json({ error: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
   }
-});
+};
 
-router.post("/login", async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await db.query(LOGIN_USERNAME_QUERY, [email]);
@@ -56,9 +53,9 @@ router.post("/login", async (req, res) => {
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE)
       .json({ error: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
   }
-});
+};
 
-router.post("/refresh", (req, res) => {
+const refresh = (req, res) => {
   const refreshToken = req.body.refreshToken;
 
   if (!refreshToken) {
@@ -78,6 +75,10 @@ router.post("/refresh", (req, res) => {
       .status(HTTP_STATUS.UNAUTHORIZED.CODE)
       .json({ error: HTTP_STATUS.UNAUTHORIZED.MESSAGE });
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  register,
+  login,
+  refresh,
+};

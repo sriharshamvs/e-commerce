@@ -1,5 +1,5 @@
 const app = require("./app");
-const migrate = require("./migrate");
+const migrate = require("../scripts/migrate");
 
 migrate()
   .then(() => {

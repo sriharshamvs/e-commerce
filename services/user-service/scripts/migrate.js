@@ -1,4 +1,4 @@
-const { CREATE_USER_TABLE_QUERY } = require("./queries");
+const { CREATE_USER_TABLE_QUERY } = require("../src/utils/queries");
 
 const { Pool } = require("pg");
 require("dotenv").config();

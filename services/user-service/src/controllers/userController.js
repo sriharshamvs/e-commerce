@@ -1,17 +1,11 @@
-const express = require("express");
-const db = require("../db");
-const authMiddleware = require("../authMiddleware");
+const db = require("../config/db");
 const {
   PROFILE_GET_USER_DETAILS_QUERY,
   UPDATE_PROFILE_USER_DETIALS_QUERY,
-} = require("../queries");
+} = require("../utils/queries");
 const { HTTP_STATUS } = require("../constants");
 
-const router = express.Router();
-
-router.use(authMiddleware);
-
-router.get("/profile", async (req, res) => {
+const getUserProfile = async (req, res) => {
   try {
     const requestBody = req.body;
     const email = requestBody.email;
@@ -39,9 +33,9 @@ router.get("/profile", async (req, res) => {
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE)
       .json({ error: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
   }
-});
+};
 
-router.put("/profile", async (req, res) => {
+const updateUserProfile = async (req, res) => {
   try {
     const requestBody = req.body;
     const email = requestBody.email;
@@ -89,6 +83,9 @@ router.put("/profile", async (req, res) => {
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE)
       .json({ error: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  getUserProfile,
+  updateUserProfile,
+};
