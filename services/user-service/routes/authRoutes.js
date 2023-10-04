@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const db = require("../db");
-const { generateToken } = require("../jwt");
+const { generateTokens } = require("../jwt");
 const { REGISTER_QUERY, LOGIN_USERNAME_QUERY } = require("../queries");
 const { HTTP_STATUS } = require("../constants");
 
@@ -48,13 +48,35 @@ router.post("/login", async (req, res) => {
         .json({ error: HTTP_STATUS.BAD_REQUEST.MESSAGE });
     }
 
-    const token = generateToken({ email });
-    res.json({ message: "Login successful", token });
+    const { accessToken, refreshToken } = generateTokens({ email });
+    res.json({ message: "Login successful", accessToken, refreshToken });
   } catch (error) {
     console.error(error);
     res
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR.CODE)
       .json({ error: HTTP_STATUS.INTERNAL_SERVER_ERROR.MESSAGE });
+  }
+});
+
+router.post("/refresh", (req, res) => {
+  const refreshToken = req.body.refreshToken;
+
+  if (!refreshToken) {
+    return res
+      .status(HTTP_STATUS.BAD_REQUEST.CODE)
+      .json({ error: HTTP_STATUS.BAD_REQUEST.MESSAGE });
+  }
+
+  try {
+    const decoded = verifyToken(refreshToken, true);
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens({
+      email: decoded.email,
+    });
+    res.json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    res
+      .status(HTTP_STATUS.UNAUTHORIZED.CODE)
+      .json({ error: HTTP_STATUS.UNAUTHORIZED.MESSAGE });
   }
 });
 

@@ -1,10 +1,20 @@
 const jwt = require("jsonwebtoken");
 
-const secret = process.env.JWT_SECRET;
-const jwt_expires = process.env.JWT_EXPIRES;
-
-const generateToken = (payload) => {
-  return jwt.sign(payload, secret, { expiresIn: jwt_expires });
+const generateTokens = (payload) => {
+  const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES,
+  });
+  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES,
+  });
+  return { accessToken, refreshToken };
 };
 
-module.exports = { generateToken };
+const verifyToken = (token, isRefreshToken = false) => {
+  const usedSecret = isRefreshToken
+    ? process.env.JWT_REFRESH_TOKEN_SECRET
+    : process.env.JWT_ACCESS_TOKEN_SECRET;
+  return jwt.verify(token, usedSecret, { algorithms: ["HS256"] });
+};
+
+module.exports = { generateTokens, verifyToken };

@@ -11,6 +11,10 @@ const HTTP_STATUS = {
     CODE: 400,
     MESSAGE: "Bad Request",
   },
+  UNAUTHORIZED: {
+    CODE: 401,
+    MESSAGE: "Unauthorized"
+  },
   NOT_FOUND: {
     CODE: 404,
     MESSAGE: "Not Found",
