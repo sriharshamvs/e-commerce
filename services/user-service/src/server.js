@@ -1,8 +1,6 @@
-// server.js
 const app = require("./app");
-const migrate = require("./migrate"); // Import the migrate function
+const migrate = require("../scripts/migrate");
 
-// Run migrations, then start the server
 migrate()
   .then(() => {
     app.listen(3000, () => {
