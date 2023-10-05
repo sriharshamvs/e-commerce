@@ -37,6 +37,8 @@ const login = async (req, res) => {
     }
 
     const { accessToken, refreshToken } = generateTokens({ email });
+    console.log("Tokens:", { accessToken, refreshToken }); // Add this line
+
     res.json({ message: "Login successful", accessToken, refreshToken });
   } catch (error) {
     console.error(error);
